@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BurnTracker 🔥</title>
+<style>
+body {
+  margin:0;
+  font-family: Arial;
+  background: linear-gradient(180deg,#111,#1c1c1c);
+  color:#fff;
+  text-align:center;
+}
+
+h1 { margin-top:20px; }
+
+.fire {
+  font-size:50px;
+  transition: all 0.3s;
+}
+.big { font-size:90px; }
+.huge { font-size:130px; }
+
+.container { margin-top:20px; }
+
+.card {
+  background:#222;
+  padding:15px;
+  margin:10px auto;
+  width:320px;
+  border-radius:15px;
+  box-shadow:0 0 10px rgba(255,120,0,0.3);
+}
+
+input, select, button {
+  padding:10px;
+  margin:5px;
+  border-radius:8px;
+  border:none;
+}
+
+button {
+  background:#ff6a00;
+  color:#fff;
+  font-weight:bold;
+}
+
+.coin {
+  color:gold;
+  font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<h1>🔥 BurnTracker</h1>
+
+<div class="container">
+  <div id="fire" class="fire">🔥</div>
+  <h2 id="kcal">0 kcal</h2>
+  <div class="coin">燃燒幣：<span id="coins">0</span></div>
+</div>
+
+<div class="card">
+  <h3>運動記錄</h3>
+  <select id="activity">
+    <option value="8">跑步</option>
+    <option value="6">重訓</option>
+    <option value="5">快走</option>
+  </select><br>
+  <input type="number" id="time" placeholder="分鐘">
+  <br>
+  <button onclick="addRecord()">新增</button>
+</div>
+
+<div class="card">
+  <h3>今日紀錄</h3>
+  <div id="records"></div>
+  <button onclick="finishDay()">完成🔥</button>
+</div>
+
+<script>
+let records = [];
+let totalKcal = localStorage.getItem('kcal') ? parseInt(localStorage.getItem('kcal')) : 0;
+let coins = localStorage.getItem('coins') ? parseInt(localStorage.getItem('coins')) : 0;
+let weight = 70;
+
+updateUI();
+
+function addRecord(){
+  let met = document.getElementById('activity').value;
+  let time = document.getElementById('time').value;
+
+  if(!time) return alert('請輸入時間');
+
+  let kcal = Math.round(weight * (time/60) * met);
+
+  records.push(kcal);
+  document.getElementById('records').innerHTML += `<div>🔥 ${kcal} kcal</div>`;
+}
+
+function finishDay(){
+  let sum = records.reduce((a,b)=>a+b,0);
+  totalKcal += sum;
+
+  let earned = Math.floor(sum / 10);
+  coins += earned;
+
+  localStorage.setItem('kcal', totalKcal);
+  localStorage.setItem('coins', coins);
+
+  records = [];
+  document.getElementById('records').innerHTML = '';
+
+  updateUI();
+}
+
+function updateUI(){
+  document.getElementById('kcal').innerText = totalKcal + ' kcal';
+  document.getElementById('coins').innerText = coins;
+
+  let fire = document.getElementById('fire');
+  fire.className = 'fire';
+
+  if(totalKcal > 600) fire.classList.add('huge');
+  else if(totalKcal > 300) fire.classList.add('big');
+}
+</script>
+
+</body>
+</html>
